@@ -7,7 +7,6 @@
   <style>
     :root {
       --primary: #1a73e8;
-      --primary-hover: #1557b0;
       --bg: #f8f9fa;
       --card: #ffffff;
       --text: #202124;
@@ -16,32 +15,27 @@
       --success: #1e8e3e;
       --error: #d93025;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; }
     .app-container { width: 100%; max-width: 480px; background: var(--card); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid var(--border); overflow: hidden; }
-    header { background: #fff; padding: 20px 20px 10px 20px; text-align: center; border-bottom: 1px solid var(--border); }
-    header h1 { font-size: 20px; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    header { padding: 20px 20px 10px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 20px; color: var(--primary); }
     header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
     .tabs { display: flex; border-bottom: 1px solid var(--border); background: #fafafa; }
-    .tab-btn { flex: 1; padding: 14px; text-align: center; border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .tab-btn { flex: 1; padding: 14px; text-align: center; border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; }
     .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #fff; }
     .content { padding: 20px; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
-    textarea { width: 100%; height: 160px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; resize: vertical; outline: none; transition: border-color 0.2s; }
-    textarea:focus { border-color: var(--primary); }
-    .file-dropzone { border: 2px dashed var(--border); border-radius: 12px; padding: 28px 16px; text-align: center; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
-    .file-dropzone:hover, .file-dropzone.dragover { background: #e8f0fe; border-color: var(--primary); }
-    .file-dropzone p { font-size: 14px; color: var(--text-muted); margin-top: 8px; }
+    textarea { width: 100%; height: 160px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; resize: vertical; outline: none; }
+    .file-dropzone { border: 2px dashed var(--border); border-radius: 12px; padding: 28px 16px; text-align: center; cursor: pointer; }
     input[type="file"] { display: none; }
-    .btn { display: block; width: 100%; margin-top: 16px; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    .btn:hover { background: var(--primary-hover); }
+    .btn { display: block; width: 100%; margin-top: 16px; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
-    #status { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; display: none; word-break: break-all; }
+    #status { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; display: none; text-align: center; font-weight: 500; }
     #status.success { background: #e6f4ea; color: var(--success); border: 1px solid #ceead6; display: block; }
-    #status.error { background: #fce8e6; color: var(--error); border: 1px solid #fad2cf; display: block; }
     #status.loading { background: #e8f0fe; color: var(--primary); border: 1px solid #d2e3fc; display: block; }
-    .preview-file { margin-top: 10px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .preview-file { margin-top: 10px; font-size: 13px; color: var(--text-muted); text-align: center; }
   </style>
 </head>
 <body>
@@ -49,7 +43,7 @@
 <div class="app-container">
   <header>
     <h1>📁 TeleGdrive Hub</h1>
-    <p>Envio direto para a sua pasta Google Drive</p>
+    <p>Envio direto para a pasta Google Drive</p>
   </header>
 
   <div class="tabs">
@@ -58,36 +52,42 @@
   </div>
 
   <div class="content">
-    <!-- ABA 1: TEXTO RÁPIDO -->
+    <!-- ABA TEXTO -->
     <div id="tab-texto" class="tab-pane active">
       <textarea id="texto-input" placeholder="Digite ou cole sua anotação aqui..."></textarea>
       <button id="btn-texto" class="btn" onclick="enviarTexto()">Salvar Texto no Drive</button>
     </div>
 
-    <!-- ABA 2: FOTOS E ARQUIVOS -->
+    <!-- ABA ARQUIVO -->
     <div id="tab-arquivo" class="tab-pane">
       <div class="file-dropzone" onclick="document.getElementById('file-input').click()">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p>Toque para escolher foto ou arquivo</p>
+        <p>📷 Toque para escolher foto ou arquivo</p>
       </div>
       <input type="file" id="file-input" onchange="mostrarNomeArquivo()">
       <div id="file-info" class="preview-file"></div>
       <button id="btn-arquivo" class="btn" onclick="enviarArquivo()" disabled>Enviar Arquivo para o Drive</button>
     </div>
 
-    <!-- STATUS / CONFIRMAÇÃO -->
     <div id="status"></div>
   </div>
 </div>
 
+<!-- FORMULÁRIO OCULTO INFALÍVEL -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="iframeCarregado()"></iframe>
+<form id="hidden_form" method="POST" target="hidden_iframe" style="display:none;">
+  <input type="hidden" name="payload" id="form_payload">
+</form>
+
 <script>
-  // URL DA APLICAÇÃO WEB DO GOOGLE APPS SCRIPT:
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr_6CYBTZ0oZ2GP0ylJBBY76VclkBMbLFVAEkL6ckEtCeVT-PIlv7o0RwEqhRpRCUupw/exec";
+  // COLOQUE AQUI A SUA URL DA APLICAÇÃO WEB (/exec):
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL0K136ASZAWlajcaE_ynFAGdZPuzdlFcBl2TFEOSB34_NhlIYsBLBZUF3NkUImJWR/exec";
+
+  let enviando = false;
 
   function trocarTab(aba) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    limparStatus();
+    document.getElementById('status').style.display = 'none';
 
     if (aba === 'texto') {
       document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
@@ -96,18 +96,6 @@
       document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
       document.getElementById('tab-arquivo').classList.add('active');
     }
-  }
-
-  function setStatus(tipo, msg) {
-    const el = document.getElementById('status');
-    el.className = tipo;
-    el.innerHTML = msg;
-  }
-
-  function limparStatus() {
-    const el = document.getElementById('status');
-    el.className = '';
-    el.style.display = 'none';
   }
 
   function mostrarNomeArquivo() {
@@ -123,75 +111,65 @@
     }
   }
 
-  // 1. ENVIO DE TEXTO DIRETO (Sem erro de CORS / Failed to fetch)
-  async function enviarTexto() {
-    const txt = document.getElementById('texto-input').value.trim();
-    if (!txt) {
-      alert("Por favor, digite algum texto antes de enviar.");
-      return;
-    }
-
-    const btn = document.getElementById('btn-texto');
-    btn.disabled = true;
-    setStatus('loading', '⏳ A guardar nota no Google Drive...');
-
-    try {
-      const payload = JSON.stringify({
-        action: "texto_direto",
-        texto: txt
-      });
-
-      await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: payload
-      });
-
-      setStatus('success', '✅ Nota enviada com sucesso para a pasta TeleGdrive!');
-      document.getElementById('texto-input').value = '';
-    } catch (e) {
-      setStatus('error', '❌ Falha de ligação: ' + e.message);
-    } finally {
-      btn.disabled = false;
-    }
+  function submeterParaAppsScript(dadosObj) {
+    enviando = true;
+    const form = document.getElementById('hidden_form');
+    form.action = APPS_SCRIPT_URL;
+    document.getElementById('form_payload').value = JSON.stringify(dadosObj);
+    form.submit();
   }
 
-  // 2. ENVIO DE ARQUIVO/FOTO (Sem erro de CORS)
-  async function enviarArquivo() {
+  function iframeCarregado() {
+    if (!enviando) return;
+    enviando = false;
+    const st = document.getElementById('status');
+    st.className = 'success';
+    st.innerHTML = '✅ Enviado com sucesso para a pasta TeleGdrive!';
+    document.getElementById('btn-texto').disabled = false;
+    document.getElementById('btn-arquivo').disabled = false;
+  }
+
+  function enviarTexto() {
+    const txt = document.getElementById('texto-input').value.trim();
+    if (!txt) {
+      alert("Digite uma nota antes de enviar.");
+      return;
+    }
+    const btn = document.getElementById('btn-texto');
+    btn.disabled = true;
+    const st = document.getElementById('status');
+    st.className = 'loading';
+    st.textContent = '⏳ Salvando nota no Drive...';
+
+    submeterParaAppsScript({
+      action: "texto_direto",
+      texto: txt
+    });
+
+    document.getElementById('texto-input').value = '';
+  }
+
+  function enviarArquivo() {
     const file = document.getElementById('file-input').files[0];
     if (!file) return;
 
     const btn = document.getElementById('btn-arquivo');
     btn.disabled = true;
-    setStatus('loading', '⏳ A enviar ficheiro para o Google Drive...');
+    const st = document.getElementById('status');
+    st.className = 'loading';
+    st.textContent = '⏳ Preparando e enviando arquivo...';
 
     const reader = new FileReader();
-    reader.onload = async function() {
-      try {
-        const base64Data = reader.result.split(',')[1];
-        const payload = JSON.stringify({
-          action: "upload_painel",
-          filename: file.name,
-          mimeType: file.type || "application/octet-stream",
-          base64: base64Data
-        });
-
-        await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
-          body: payload
-        });
-
-        setStatus('success', `✅ Ficheiro "${file.name}" enviado com sucesso para a pasta TeleGdrive!`);
-        document.getElementById('file-input').value = '';
-        document.getElementById('file-info').textContent = '';
-      } catch (e) {
-        setStatus('error', '❌ Falha de ligação: ' + e.message);
-      } finally {
-        btn.disabled = false;
-      }
+    reader.onload = function() {
+      const base64Data = reader.result.split(',')[1];
+      submeterParaAppsScript({
+        action: "upload_painel",
+        filename: file.name,
+        mimeType: file.type || "application/octet-stream",
+        base64: base64Data
+      });
+      document.getElementById('file-input').value = '';
+      document.getElementById('file-info').textContent = '';
     };
     reader.readAsDataURL(file);
   }
