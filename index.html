@@ -41,7 +41,6 @@
     #status.success { background: #e6f4ea; color: var(--success); border: 1px solid #ceead6; display: block; }
     #status.error { background: #fce8e6; color: var(--error); border: 1px solid #fad2cf; display: block; }
     #status.loading { background: #e8f0fe; color: var(--primary); border: 1px solid #d2e3fc; display: block; }
-    #status a { color: var(--primary); font-weight: 600; text-decoration: underline; }
     .preview-file { margin-top: 10px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
   </style>
 </head>
@@ -82,7 +81,7 @@
 </div>
 
 <script>
-  // COLOQUE AQUI A SUA URL DA APLICAÇÃO WEB DO GOOGLE APPS SCRIPT:
+  // URL DA APLICAÇÃO WEB DO GOOGLE APPS SCRIPT:
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr_6CYBTZ0oZ2GP0ylJBBY76VclkBMbLFVAEkL6ckEtCeVT-PIlv7o0RwEqhRpRCUupw/exec";
 
   function trocarTab(aba) {
@@ -124,7 +123,7 @@
     }
   }
 
-  // 1. ENVIO DE TEXTO DIRETO
+  // 1. ENVIO DE TEXTO DIRETO (Sem erro de CORS / Failed to fetch)
   async function enviarTexto() {
     const txt = document.getElementById('texto-input').value.trim();
     if (!txt) {
@@ -134,70 +133,62 @@
 
     const btn = document.getElementById('btn-texto');
     btn.disabled = true;
-    setStatus('loading', '⏳ Salvando texto no Google Drive...');
+    setStatus('loading', '⏳ A guardar nota no Google Drive...');
 
     try {
-      const payload = {
+      const payload = JSON.stringify({
         action: "texto_direto",
         texto: txt
-      };
-
-      const resp = await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
       });
 
-      const res = await resp.json();
-      if (res.status === "success") {
-        setStatus('success', `✅ Texto salvo com sucesso!<br><a href="${res.fileUrl}" target="_blank">Abrir: ${res.fileName}</a>`);
-        document.getElementById('texto-input').value = '';
-      } else {
-        setStatus('error', '❌ Erro: ' + (res.message || 'Falha ao salvar'));
-      }
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: payload
+      });
+
+      setStatus('success', '✅ Nota enviada com sucesso para a pasta TeleGdrive!');
+      document.getElementById('texto-input').value = '';
     } catch (e) {
-      setStatus('error', '❌ Erro de conexão com o Apps Script: ' + e.message);
+      setStatus('error', '❌ Falha de ligação: ' + e.message);
     } finally {
       btn.disabled = false;
     }
   }
 
-  // 2. ENVIO DE ARQUIVO/FOTO
+  // 2. ENVIO DE ARQUIVO/FOTO (Sem erro de CORS)
   async function enviarArquivo() {
     const file = document.getElementById('file-input').files[0];
     if (!file) return;
 
     const btn = document.getElementById('btn-arquivo');
     btn.disabled = true;
-    setStatus('loading', '⏳ Convertendo e enviando arquivo para o Google Drive...');
+    setStatus('loading', '⏳ A enviar ficheiro para o Google Drive...');
 
     const reader = new FileReader();
     reader.onload = async function() {
       try {
         const base64Data = reader.result.split(',')[1];
-        const payload = {
+        const payload = JSON.stringify({
           action: "upload_painel",
           filename: file.name,
           mimeType: file.type || "application/octet-stream",
           base64: base64Data
-        };
-
-        const resp = await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
         });
 
-        const res = await resp.json();
-        if (res.status === "success") {
-          setStatus('success', `✅ Arquivo enviado com sucesso!<br><a href="${res.fileUrl}" target="_blank">Abrir: ${res.fileName}</a>`);
-          document.getElementById('file-input').value = '';
-          document.getElementById('file-info').textContent = '';
-        } else {
-          setStatus('error', '❌ Erro: ' + (res.message || 'Falha no envio'));
-        }
+        await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: payload
+        });
+
+        setStatus('success', `✅ Ficheiro "${file.name}" enviado com sucesso para a pasta TeleGdrive!`);
+        document.getElementById('file-input').value = '';
+        document.getElementById('file-info').textContent = '';
       } catch (e) {
-        setStatus('error', '❌ Falha na transmissão: ' + e.message);
+        setStatus('error', '❌ Falha de ligação: ' + e.message);
       } finally {
         btn.disabled = false;
       }
