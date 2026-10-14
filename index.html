@@ -2,114 +2,209 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload Direto - Google Drive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TeleGdrive Hub</title>
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #f1f3f4; margin: 0; padding: 24px 16px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-    .card { background: #ffffff; width: 100%; max-width: 460px; padding: 28px 24px; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-    h2 { margin-top: 0; color: #1a73e8; font-size: 20px; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    p.sub { font-size: 13px; color: #5f6368; margin-top: 0; margin-bottom: 20px; }
-    .field { margin-bottom: 18px; }
-    label { display: block; font-size: 13px; font-weight: 600; color: #3c4043; margin-bottom: 6px; }
-    input[type="text"] { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; background: #fafafa; outline: none; }
-    input[type="text"]:focus { border-color: #1a73e8; background: #fff; }
-    input[type="file"] { width: 100%; padding: 10px; border: 1px dashed #dadce0; border-radius: 8px; font-size: 13px; background: #f8f9fa; cursor: pointer; }
-    button { width: 100%; padding: 14px; background-color: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    button:hover { background-color: #1557b0; }
-    button:disabled { background-color: #a8c7fa; cursor: not-allowed; }
-    #status { margin-top: 18px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; text-align: center; word-break: break-all; }
-    .sucesso { background: #e6f4ea; color: #137333; border: 1px solid #ceead6; display: block !important; }
-    .erro { background: #fce8e6; color: #c5221f; border: 1px solid #fad2cf; display: block !important; }
-    .carregando { background: #e8f0fe; color: #1a73e8; border: 1px solid #d2e3fc; display: block !important; }
+    :root {
+      --primary: #1a73e8;
+      --primary-hover: #1557b0;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #202124;
+      --text-muted: #5f6368;
+      --border: #dadce0;
+      --success: #1e8e3e;
+      --error: #d93025;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; }
+    .app-container { width: 100%; max-width: 480px; background: var(--card); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid var(--border); overflow: hidden; }
+    header { background: #fff; padding: 20px 20px 10px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 20px; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .tabs { display: flex; border-bottom: 1px solid var(--border); background: #fafafa; }
+    .tab-btn { flex: 1; padding: 14px; text-align: center; border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #fff; }
+    .content { padding: 20px; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    textarea { width: 100%; height: 160px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; resize: vertical; outline: none; transition: border-color 0.2s; }
+    textarea:focus { border-color: var(--primary); }
+    .file-dropzone { border: 2px dashed var(--border); border-radius: 12px; padding: 28px 16px; text-align: center; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+    .file-dropzone:hover, .file-dropzone.dragover { background: #e8f0fe; border-color: var(--primary); }
+    .file-dropzone p { font-size: 14px; color: var(--text-muted); margin-top: 8px; }
+    input[type="file"] { display: none; }
+    .btn { display: block; width: 100%; margin-top: 16px; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    #status { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; display: none; word-break: break-all; }
+    #status.success { background: #e6f4ea; color: var(--success); border: 1px solid #ceead6; display: block; }
+    #status.error { background: #fce8e6; color: var(--error); border: 1px solid #fad2cf; display: block; }
+    #status.loading { background: #e8f0fe; color: var(--primary); border: 1px solid #d2e3fc; display: block; }
+    #status a { color: var(--primary); font-weight: 600; text-decoration: underline; }
+    .preview-file { margin-top: 10px; font-size: 13px; color: var(--text-muted); font-weight: 500; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>📁 Envio p/ Google Drive</h2>
-    <p class="sub">Pasta de destino: <b>Painel_Anexos</b></p>
+<div class="app-container">
+  <header>
+    <h1>📁 TeleGdrive Hub</h1>
+    <p>Envio direto para a sua pasta Google Drive</p>
+  </header>
 
-    <div class="field">
-      <label for="nomeCustom">Nome do Arquivo (Opcional):</label>
-      <input type="text" id="nomeCustom" placeholder="Ex: foto_asus_comprovante">
-    </div>
-
-    <div class="field">
-      <label for="arquivoInput">Selecione o Arquivo ou Foto:</label>
-      <input type="file" id="arquivoInput">
-    </div>
-
-    <button id="btnEnviar" onclick="enviarParaDrive()">🚀 Subir para o Drive</button>
-
-    <div id="status"></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="trocarTab('texto')">📝 Nota de Texto</button>
+    <button class="tab-btn" onclick="trocarTab('arquivo')">📎 Fotos e Arquivos</button>
   </div>
 
-  <script>
-    // Cole aqui a sua URL da Web App do Google Apps Script terminada em /exec
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL0K136ASZAWlajcaE_ynFAGdZPuzdlFcBl2TFEOSB34_NhlIYsBLBZUF3NkUImJWR/exec";
+  <div class="content">
+    <!-- ABA 1: TEXTO RÁPIDO -->
+    <div id="tab-texto" class="tab-pane active">
+      <textarea id="texto-input" placeholder="Digite ou cole sua anotação aqui..."></textarea>
+      <button id="btn-texto" class="btn" onclick="enviarTexto()">Salvar Texto no Drive</button>
+    </div>
 
-    function enviarParaDrive() {
-      const fileInput = document.getElementById("arquivoInput");
-      const statusDiv = document.getElementById("status");
-      const btn = document.getElementById("btnEnviar");
-      const nomeCustom = document.getElementById("nomeCustom").value.trim();
+    <!-- ABA 2: FOTOS E ARQUIVOS -->
+    <div id="tab-arquivo" class="tab-pane">
+      <div class="file-dropzone" onclick="document.getElementById('file-input').click()">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#5f6368" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p>Toque para escolher foto ou arquivo</p>
+      </div>
+      <input type="file" id="file-input" onchange="mostrarNomeArquivo()">
+      <div id="file-info" class="preview-file"></div>
+      <button id="btn-arquivo" class="btn" onclick="enviarArquivo()" disabled>Enviar Arquivo para o Drive</button>
+    </div>
 
-      if (!fileInput.files || fileInput.files.length === 0) {
-        alert("Por favor, selecione um arquivo primeiro!");
-        return;
-      }
+    <!-- STATUS / CONFIRMAÇÃO -->
+    <div id="status"></div>
+  </div>
+</div>
 
-      const file = fileInput.files[0];
+<script>
+  // COLOQUE AQUI A SUA URL DA APLICAÇÃO WEB DO GOOGLE APPS SCRIPT:
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr_6CYBTZ0oZ2GP0ylJBBY76VclkBMbLFVAEkL6ckEtCeVT-PIlv7o0RwEqhRpRCUupw/exec";
+
+  function trocarTab(aba) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    limparStatus();
+
+    if (aba === 'texto') {
+      document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+      document.getElementById('tab-texto').classList.add('active');
+    } else {
+      document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+      document.getElementById('tab-arquivo').classList.add('active');
+    }
+  }
+
+  function setStatus(tipo, msg) {
+    const el = document.getElementById('status');
+    el.className = tipo;
+    el.innerHTML = msg;
+  }
+
+  function limparStatus() {
+    const el = document.getElementById('status');
+    el.className = '';
+    el.style.display = 'none';
+  }
+
+  function mostrarNomeArquivo() {
+    const file = document.getElementById('file-input').files[0];
+    const info = document.getElementById('file-info');
+    const btn = document.getElementById('btn-arquivo');
+    if (file) {
+      info.textContent = `Selecionado: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      btn.disabled = false;
+    } else {
+      info.textContent = '';
       btn.disabled = true;
-      statusDiv.className = "carregando";
-      statusDiv.innerText = "⏳ Enviando para o Google Drive...";
+    }
+  }
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const rawBase64 = e.target.result.split(',')[1];
-        
-        let nomeFinal = file.name;
-        if (nomeCustom) {
-          const extIndex = file.name.lastIndexOf('.');
-          const ext = extIndex !== -1 ? file.name.substring(extIndex) : '';
-          nomeFinal = nomeCustom + ext;
-        }
+  // 1. ENVIO DE TEXTO DIRETO
+  async function enviarTexto() {
+    const txt = document.getElementById('texto-input').value.trim();
+    if (!txt) {
+      alert("Por favor, digite algum texto antes de enviar.");
+      return;
+    }
 
-        const payload = {
-          action: "upload_painel",
-          filename: nomeFinal,
-          mimeType: file.type,
-          base64: rawBase64
-        };
+    const btn = document.getElementById('btn-texto');
+    btn.disabled = true;
+    setStatus('loading', '⏳ Salvando texto no Google Drive...');
 
-        fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-          btn.disabled = false;
-          if (data.status === "success") {
-            statusDiv.className = "sucesso";
-            statusDiv.innerHTML = `✅ <b>Salvo no Google Drive!</b><br><br><a href="${data.fileUrl}" target="_blank" style="color:#137333; font-weight:bold; text-decoration:underline;">Visualizar Arquivo no Drive</a>`;
-            fileInput.value = "";
-            document.getElementById("nomeCustom").value = "";
-          } else {
-            statusDiv.className = "erro";
-            statusDiv.innerText = "❌ Erro ao salvar: " + (data.message || "Erro desconhecido");
-          }
-        })
-        .catch(err => {
-          btn.disabled = false;
-          statusDiv.className = "erro";
-          statusDiv.innerText = "❌ Falha na conexão com o script da Google.";
-        });
+    try {
+      const payload = {
+        action: "texto_direto",
+        texto: txt
       };
 
-      reader.readAsDataURL(file);
+      const resp = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+
+      const res = await resp.json();
+      if (res.status === "success") {
+        setStatus('success', `✅ Texto salvo com sucesso!<br><a href="${res.fileUrl}" target="_blank">Abrir: ${res.fileName}</a>`);
+        document.getElementById('texto-input').value = '';
+      } else {
+        setStatus('error', '❌ Erro: ' + (res.message || 'Falha ao salvar'));
+      }
+    } catch (e) {
+      setStatus('error', '❌ Erro de conexão com o Apps Script: ' + e.message);
+    } finally {
+      btn.disabled = false;
     }
-  </script>
+  }
+
+  // 2. ENVIO DE ARQUIVO/FOTO
+  async function enviarArquivo() {
+    const file = document.getElementById('file-input').files[0];
+    if (!file) return;
+
+    const btn = document.getElementById('btn-arquivo');
+    btn.disabled = true;
+    setStatus('loading', '⏳ Convertendo e enviando arquivo para o Google Drive...');
+
+    const reader = new FileReader();
+    reader.onload = async function() {
+      try {
+        const base64Data = reader.result.split(',')[1];
+        const payload = {
+          action: "upload_painel",
+          filename: file.name,
+          mimeType: file.type || "application/octet-stream",
+          base64: base64Data
+        };
+
+        const resp = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        const res = await resp.json();
+        if (res.status === "success") {
+          setStatus('success', `✅ Arquivo enviado com sucesso!<br><a href="${res.fileUrl}" target="_blank">Abrir: ${res.fileName}</a>`);
+          document.getElementById('file-input').value = '';
+          document.getElementById('file-info').textContent = '';
+        } else {
+          setStatus('error', '❌ Erro: ' + (res.message || 'Falha no envio'));
+        }
+      } catch (e) {
+        setStatus('error', '❌ Falha na transmissão: ' + e.message);
+      } finally {
+        btn.disabled = false;
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+</script>
 
 </body>
 </html>
