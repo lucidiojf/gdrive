@@ -1,10 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Hub de Envios</title>
+  <title>Central de Envio</title>
+  
+  <!-- Script oficial do Telegram WebApp para evitar erros dentro do Telegram Web/App -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     :root {
       --primary: #1a73e8;
@@ -81,14 +84,14 @@
       <button id="btn-arquivo" class="btn" onclick="enviarArquivo()" disabled>Enviar para o Drive</button>
     </div>
 
-<!-- ABA 3: SOLICITAÇÃO DROPBOX -->
-<div id="tab-dropbox" class="tab-pane">
-  <div class="card-box">
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--dropbox)"><path d="M6 2l6 4-6 4-6-4 6-4zm12 0l6 4-6 4-6-4 6-4zm-6 9.5l6-4 6 4-6 4-6-4zm-6 0l6-4 6 4-6 4-6-4zm6 5.5l-6 4-6-4v2l6 4 6-4v-2zm0 0l6 4 6-4v-2l-6 4-6-4v2z"/></svg>
-    <p><strong>Carregamento Direto no Dropbox</strong><br>Toque no botão para abrir o carregador oficial do Dropbox no navegador:</p>
-    <button type="button" onclick="abrirDropbox()" class="btn btn-dropbox">📤 Abrir Envio do Dropbox</button>
-  </div>
-</div>
+    <!-- ABA 3: SOLICITAÇÃO DROPBOX -->
+    <div id="tab-dropbox" class="tab-pane">
+      <div class="card-box">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--dropbox)"><path d="M6 2l6 4-6 4-6-4 6-4zm12 0l6 4-6 4-6-4 6-4zm-6 9.5l6-4 6 4-6 4-6-4zm-6 0l6-4 6 4-6 4-6-4zm6 5.5l-6 4-6-4v2l6 4 6-4v-2zm0 0l6 4 6-4v-2l-6 4-6-4v2z"/></svg>
+        <p><strong>Carregamento Direto no Dropbox</strong><br>Envie fotografias e ficheiros diretamente para a sua pasta através da solicitação oficial:</p>
+        <button type="button" onclick="abrirDropbox()" class="btn btn-dropbox">📤 Carregar no Dropbox</button>
+      </div>
+    </div>
 
     <div id="status"></div>
   </div>
@@ -100,6 +103,14 @@
 </form>
 
 <script>
+  // Inicialização no Telegram WebApp
+  if (window.Telegram && window.Telegram.WebApp) {
+    try {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+    } catch (e) {}
+  }
+
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL0K136ASZAWlajcaE_ynFAGdZPuzdlFcBl2TFEOSB34_NhlIYsBLBZUF3NkUImJWR/exec";
 
   let enviando = false;
@@ -202,14 +213,15 @@
     };
     reader.readAsDataURL(file);
   }
+
   function abrirDropbox() {
-  const url = "https://www.dropbox.com/request/8u5j5n328j1fxyh2mmqb";
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
-    window.Telegram.WebApp.openLink(url);
-  } else {
-    window.open(url, '_blank');
+    const url = "https://www.dropbox.com/request/8u5j5n328j1fxyh2mmqb";
+    if (window.Telegram && window.Telegram.WebApp && typeof window.Telegram.WebApp.openLink === "function") {
+      window.Telegram.WebApp.openLink(url);
+    } else {
+      window.open(url, '_blank');
+    }
   }
-}
 </script>
 
 </body>
