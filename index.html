@@ -1,12 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TeleGdrive Hub</title>
+  <title>Hub de Envios</title>
   <style>
     :root {
       --primary: #1a73e8;
+      --dropbox: #0061fe;
       --bg: #f8f9fa;
       --card: #ffffff;
       --text: #202124;
@@ -16,63 +18,76 @@
       --error: #d93025;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; }
+    body { background-color: var(--bg); color: var(--text); padding: 12px; display: flex; justify-content: center; }
     .app-container { width: 100%; max-width: 480px; background: var(--card); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid var(--border); overflow: hidden; }
-    header { padding: 20px 20px 10px 20px; text-align: center; border-bottom: 1px solid var(--border); }
-    header h1 { font-size: 20px; color: var(--primary); }
-    header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    header { padding: 16px 16px 10px 16px; text-align: center; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 19px; color: var(--primary); }
+    header p { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
     .tabs { display: flex; border-bottom: 1px solid var(--border); background: #fafafa; }
-    .tab-btn { flex: 1; padding: 14px; text-align: center; border: none; background: none; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; }
+    .tab-btn { flex: 1; padding: 12px 6px; text-align: center; border: none; background: none; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
     .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #fff; }
-    .content { padding: 20px; }
+    .tab-btn.dropbox-active { color: var(--dropbox); border-bottom-color: var(--dropbox); background: #fff; }
+    .content { padding: 16px; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
-    textarea { width: 100%; height: 150px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; resize: vertical; outline: none; }
-    .caption-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; margin-top: 12px; outline: none; }
+    textarea { width: 100%; height: 140px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; resize: vertical; outline: none; }
+    .caption-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; margin-top: 10px; outline: none; }
     .caption-input:focus, textarea:focus { border-color: var(--primary); }
-    .file-dropzone { border: 2px dashed var(--border); border-radius: 12px; padding: 24px 16px; text-align: center; cursor: pointer; background: #fafafa; }
+    .file-dropzone { border: 2px dashed var(--border); border-radius: 12px; padding: 22px 14px; text-align: center; cursor: pointer; background: #fafafa; }
     .file-dropzone:hover { background: #f1f3f4; }
     input[type="file"] { display: none; }
-    .btn { display: block; width: 100%; margin-top: 16px; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .btn { display: block; width: 100%; margin-top: 14px; padding: 13px; background: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; }
+    .btn-dropbox { background: var(--dropbox); }
+    .btn-dropbox:hover { background: #0050d4; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
-    #status { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; display: none; text-align: center; font-weight: 500; }
+    #status { margin-top: 14px; padding: 12px; border-radius: 8px; font-size: 13px; display: none; text-align: center; font-weight: 500; }
     #status.success { background: #e6f4ea; color: var(--success); border: 1px solid #ceead6; display: block; }
     #status.loading { background: #e8f0fe; color: var(--primary); border: 1px solid #d2e3fc; display: block; }
-    .preview-file { margin-top: 10px; font-size: 13px; color: var(--text-muted); text-align: center; }
+    .preview-file { margin-top: 8px; font-size: 13px; color: var(--text-muted); text-align: center; }
+    .card-box { background: #f0f6ff; border: 1px solid #c9deff; border-radius: 12px; padding: 18px; text-align: center; }
+    .card-box p { font-size: 14px; color: #333; margin-top: 8px; line-height: 1.4; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
   <header>
-    <h1>📁 TeleGdrive Hub</h1>
-    <p>Envio direto para o Google Drive</p>
+    <h1>🚀 Central de Envio</h1>
+    <p>Envie notas e ficheiros para Google Drive ou Dropbox</p>
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" onclick="trocarTab('texto')">📝 Nota de Texto</button>
-    <button class="tab-btn" onclick="trocarTab('arquivo')">📎 Fotos e Arquivos</button>
+    <button class="tab-btn active" onclick="trocarTab('texto')">📝 Nota GDrive</button>
+    <button class="tab-btn" onclick="trocarTab('arquivo')">📁 Ficheiro GDrive</button>
+    <button class="tab-btn" onclick="trocarTab('dropbox')">📦 Dropbox</button>
   </div>
 
   <div class="content">
-    <!-- ABA 1: TEXTO RÁPIDO -->
+    <!-- ABA 1: NOTA GDRIVE -->
     <div id="tab-texto" class="tab-pane active">
-      <textarea id="texto-input" placeholder="Digite ou cole sua anotação aqui..."></textarea>
-      <button id="btn-texto" class="btn" onclick="enviarTexto()">Salvar Texto no Drive</button>
+      <textarea id="texto-input" placeholder="Escreva a sua anotação para o Google Drive..."></textarea>
+      <button id="btn-texto" class="btn" onclick="enviarTexto()">Guardar Nota no Drive</button>
     </div>
 
-    <!-- ABA 2: FOTOS E ARQUIVOS COM LEGENDA -->
+    <!-- ABA 2: FICHEIROS GDRIVE COM LEGENDA -->
     <div id="tab-arquivo" class="tab-pane">
       <div class="file-dropzone" onclick="document.getElementById('file-input').click()">
-        <p>📷 Toque para escolher foto ou arquivo</p>
+        <p>📷 Toque para escolher foto ou ficheiro</p>
       </div>
       <input type="file" id="file-input" onchange="mostrarNomeArquivo()">
       <div id="file-info" class="preview-file"></div>
       
-      <!-- CAMPO DE LEGENDA ADICIONADO -->
-      <input type="text" id="legenda-input" class="caption-input" placeholder="Legenda ou descrição (opcional)...">
-      
-      <button id="btn-arquivo" class="btn" onclick="enviarArquivo()" disabled>Enviar Arquivo para o Drive</button>
+      <input type="text" id="legenda-input" class="caption-input" placeholder="Legenda / descrição (opcional)...">
+      <button id="btn-arquivo" class="btn" onclick="enviarArquivo()" disabled>Enviar para o Drive</button>
+    </div>
+
+    <!-- ABA 3: SOLICITAÇÃO DROPBOX -->
+    <div id="tab-dropbox" class="tab-pane">
+      <div class="card-box">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="var(--dropbox)"><path d="M6 2l6 4-6 4-6-4 6-4zm12 0l6 4-6 4-6-4 6-4zm-6 9.5l6-4 6 4-6 4-6-4zm-6 0l6-4 6 4-6 4-6-4zm6 5.5l-6 4-6-4v2l6 4 6-4v-2zm0 0l6 4 6-4v-2l-6 4-6-4v2z"/></svg>
+        <p><strong>Carregamento Direto no Dropbox</strong><br>Envie fotografias e ficheiros diretamente para a sua pasta através da solicitação oficial:</p>
+        <a href="https://www.dropbox.com/request/8u5j5n328j1fxyh2mmqb" target="_blank" class="btn btn-dropbox">📤 Carregar no Dropbox</a>
+      </div>
     </div>
 
     <div id="status"></div>
@@ -85,22 +100,27 @@
 </form>
 
 <script>
-  // URL ATIVA DO NOVO APPS SCRIPT:
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL0K136ASZAWlajcaE_ynFAGdZPuzdlFcBl2TFEOSB34_NhlIYsBLBZUF3NkUImJWR/exec";
 
   let enviando = false;
 
   function trocarTab(aba) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.classList.remove('dropbox-active');
+    });
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.getElementById('status').style.display = 'none';
 
     if (aba === 'texto') {
       document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
       document.getElementById('tab-texto').classList.add('active');
-    } else {
+    } else if (aba === 'arquivo') {
       document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
       document.getElementById('tab-arquivo').classList.add('active');
+    } else if (aba === 'dropbox') {
+      document.querySelector('.tab-btn:nth-child(3)').classList.add('dropbox-active');
+      document.getElementById('tab-dropbox').classList.add('active');
     }
   }
 
@@ -109,7 +129,7 @@
     const info = document.getElementById('file-info');
     const btn = document.getElementById('btn-arquivo');
     if (file) {
-      info.textContent = `Selecionado: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      info.textContent = `Ficheiro: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
       btn.disabled = false;
     } else {
       info.textContent = '';
@@ -130,7 +150,7 @@
     enviando = false;
     const st = document.getElementById('status');
     st.className = 'success';
-    st.innerHTML = '✅ Enviado com sucesso para a pasta TeleGdrive!';
+    st.innerHTML = '✅ Guardado com sucesso na pasta TeleGdrive!';
     document.getElementById('btn-texto').disabled = false;
     document.getElementById('btn-arquivo').disabled = false;
   }
@@ -138,14 +158,14 @@
   function enviarTexto() {
     const txt = document.getElementById('texto-input').value.trim();
     if (!txt) {
-      alert("Digite uma nota antes de enviar.");
+      alert("Por favor, introduza algum texto antes de enviar.");
       return;
     }
     const btn = document.getElementById('btn-texto');
     btn.disabled = true;
     const st = document.getElementById('status');
     st.className = 'loading';
-    st.textContent = '⏳ Salvando nota no Drive...';
+    st.textContent = '⏳ A guardar nota no Google Drive...';
 
     submeterParaAppsScript({
       action: "texto_direto",
@@ -160,12 +180,11 @@
     if (!file) return;
 
     const legenda = document.getElementById('legenda-input').value.trim();
-
     const btn = document.getElementById('btn-arquivo');
     btn.disabled = true;
     const st = document.getElementById('status');
     st.className = 'loading';
-    st.textContent = '⏳ Preparando e enviando arquivo com legenda...';
+    st.textContent = '⏳ A enviar ficheiro com legenda para o Drive...';
 
     const reader = new FileReader();
     reader.onload = function() {
